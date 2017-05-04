@@ -249,3 +249,6 @@
 
 - Role: edxapp
   - Added `EDXAPP_BLOCK_STRUCTURES_SETTINGS` to configure S3-backed Course Block Structures.
+
+- Role: edxapp
+  - Added `EDXAPP_VIDEO_IMAGE_SETTINGS` to configure S3-backed video images.
