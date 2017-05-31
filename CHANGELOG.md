@@ -1,4 +1,7 @@
 - Role: edxapp
+  - Install development.txt in Vagrant and Docker devstacks
+
+- Role: edxapp
   - Added the EDXAPP_SHOW_HEADER_LANGUAGE_SELECTOR feature flag with default value [false]
   - Added the EDXAPP_SHOW_FOOTER_LANGUAGE_SELECTOR feature flag with default value [false]
 
