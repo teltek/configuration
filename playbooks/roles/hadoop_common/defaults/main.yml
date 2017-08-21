@@ -22,8 +22,10 @@ HADOOP_COMMON_CONF_DIR: "{{ HADOOP_COMMON_HOME }}/etc/hadoop"
 
 HADOOP_COMMON_PROTOBUF_VERSION: 2.5.0
 HADOOP_COMMON_SERVICES_DIR: "{{ HADOOP_COMMON_USER_HOME }}/services.d"
-HADOOP_COMMON_SERVICE_HEAP_MAX: 256
-HADOOP_COMMON_TOOL_HEAP_MAX: 128
+# http://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-hadoop-daemons.html
+# c3.xlarge
+HADOOP_COMMON_SERVICE_HEAP_MAX: 2124
+HADOOP_COMMON_TOOL_HEAP_MAX: 972
 
 hadoop_common_role_name: hadoop_common
 hadoop_common_user: hadoop
@@ -78,7 +80,11 @@ hadoop_common_redhat_pkgs: []
 #   yarn.nodemanager.resource.memory-mb: 2048
 #   yarn.nodemanager.vmem-pmem-ratio: 2.1
 
-mapred_site_config: {}
+mapred_site_config:
+  mapreduce.map.memory.mb: 1408
+  mapreduce.map.java.opts: '-Xmx1126M'
+  mapreduce.reduce.memory.mb: 2816
+  mapreduce.reduce.java.opts: '-Xmx2252M'
 
 yarn_site_config:
   yarn.log-aggregation-enable: true
@@ -86,6 +92,10 @@ yarn_site_config:
   yarn.log-aggregation.retain-seconds: 86400
   # Checking virtual memory usage causes too many spurious failures.
   yarn.nodemanager.vmem-check-enabled: false
+  yarn.app.mapreduce.am.resource.mb: 2816
+  yarn.scheduler.minimum-allocation-mb: 32
+  yarn.scheduler.maximum-allocation-mb: 5632
+  yarn.nodemanager.resource.memory-mb: 5632
 
 HADOOP_CORE_SITE_EXTRA_CONFIG: {}
 HDFS_SITE_EXTRA_CONFIG: {}
