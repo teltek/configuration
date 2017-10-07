@@ -21,13 +21,8 @@ if [[ -z "${ANSIBLE_VERSION}" ]]; then
   ANSIBLE_VERSION="master"
 fi
 
-if [[ -z "${CONFIGURATION_REPO}" ]]; then
-  CONFIGURATION_REPO="https://github.com/edx/configuration.git"
-fi
-
-if [[ -z "${CONFIGURATION_VERSION}" ]]; then
-  CONFIGURATION_VERSION="master"
-fi
+CONFIGURATION_REPO="https://github.com/teltek/configuration.git"
+CONFIGURATION_VERSION="open-release/ficus.master-node"
 
 if [[ -z "${UPGRADE_OS}" ]]; then
   UPGRADE_OS=false

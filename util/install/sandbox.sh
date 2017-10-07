@@ -45,7 +45,6 @@ VERSION_VARS=(
   certs_version
   forum_version
   xqueue_version
-  configuration_version
   demo_version
   NOTIFIER_VERSION
   INSIGHTS_VERSION
@@ -65,19 +64,20 @@ for var in ${VERSION_VARS[@]}; do
     EXTRA_VARS="-e $var=$override $EXTRA_VARS"
   fi
 done
+EXTRA_VARS="-e configuration_version=open-release/ficus.master-node $EXTRA_VARS"
 
 # my-passwords.yml is the file made by generate-passwords.sh.
 if [[ -f my-passwords.yml ]]; then
     EXTRA_VARS="-e@$(pwd)/my-passwords.yml $EXTRA_VARS"
 fi
 
-CONFIGURATION_VERSION=${CONFIGURATION_VERSION-${OPENEDX_RELEASE-master}}
+CONFIGURATION_VERSION="open-release/ficus.master-node"
 
 ##
 ## Clone the configuration repository and run Ansible
 ##
 cd /var/tmp
-git clone https://github.com/edx/configuration
+git clone https://github.com/teltek/configuration
 cd configuration
 git checkout $CONFIGURATION_VERSION
 git pull
