@@ -190,3 +190,9 @@ NGINX_CREATE_HTPASSWD_FILE: >
     XQUEUE_ENABLE_BASIC_AUTH|bool or
     XSERVER_ENABLE_BASIC_AUTH|bool
   }}
+
+# If comprehensive theme enabled, write down the name
+# of the theme as in EDXAPP_DEFAULT_SITE_THEME
+# ending with /
+# Example: "your-site-theme/"
+NGINX_EDXAPP_DEFAULT_SITE_THEME: ""
