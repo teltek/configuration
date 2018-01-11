@@ -189,7 +189,7 @@ fi
 # makes it hard to tell what is actually happening during the upgrade.
 # "stdbuf -oL" will run ansible with line-buffered stdout, which makes the
 # messages scroll in the way people expect.
-ANSIBLE_PLAYBOOK="sudo stdbuf -oL ansible-playbook --inventory-file=localhost, --connection=local "
+ANSIBLE_PLAYBOOK="sudo stdbuf -oL ansible-playbook -vvvv --inventory-file=localhost, --connection=local "
 
 make_config_venv () {
   virtualenv venv
@@ -306,7 +306,8 @@ if [[ $TARGET == *eucalyptus* ]] ; then
   cd configuration/playbooks/vagrant
   $ANSIBLE_PLAYBOOK \
     $SERVER_VARS \
-    --extra-vars="edx_platform_version=$TARGET" \
+    --extra-vars="edx_platform_version=$TARGET.migrate" \
+    --extra-vars="edx_platform_repo=https://github.com/teltek/edx-platform.git" \
     --extra-vars="xqueue_version=$TARGET" \
     --extra-vars="migrate_db=no" \
     --skip-tags="edxapp-sandbox,gather_static_assets" \
@@ -325,7 +326,8 @@ fi
 
 echo "Updating to final version of code"
 cd configuration/playbooks
-echo "edx_platform_version: $TARGET" > vars.yml
+echo "edx_platform_version: $TARGET.migrate" > vars.yml
+echo "edx_platform_repo: https://github.com/teltek/edx-platform.git" >> vars.yml
 echo "certs_version: $TARGET" >> vars.yml
 echo "forum_version: $TARGET" >> vars.yml
 echo "xqueue_version: $TARGET" >> vars.yml
