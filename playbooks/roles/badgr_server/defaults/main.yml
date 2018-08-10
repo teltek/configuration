@@ -1,0 +1,115 @@
+# These are variables that default to a localhost
+# setup and are meant to be overwritten for
+# different environments.
+
+# Variables for Badgr Server
+
+BADGR_SERVER_GIT_IDENTITY: "none"
+BADGR_SERVER_USE_GIT_IDENTITY: false
+
+BADGR_SERVER_SITE_NAME: 'localhost'
+BADGR_SERVER_NGINX_PORT: 4044
+BADGR_SERVER_SSL_NGINX_PORT: 44004
+BADGR_SERVER_PYTHON_PORT: 4004
+BADGR_SERVER_BASE: "{{ BADGR_SERVER_SITE_NAME }}:{{ BADGR_SERVER_NGINX_PORT }}"
+
+BADGR_SERVER_DEFAULT_DB_NAME: 'badgr_server'
+BADGR_SERVER_MYSQL_DB_NAME: 'badgr_server'
+BADGR_SERVER_MYSQL_USER: 'badgr_server001'
+BADGR_SERVER_MYSQL_USER_ADMIN: 'root'
+BADGR_SERVER_MYSQL_PASSWORD: 'password'
+BADGR_SERVER_MYSQL_PASSWORD_READ_ONLY: 'password'
+BADGR_SERVER_MYSQL_PASSWORD_ADMIN: 'password'
+
+
+
+BADGR_SERVER_MYSQL_CONN_MAX_AGE: 0
+
+BADGR_SERVER_MYSQL_HOST: 'localhost'
+BADGR_SERVER_MYSQL_PORT: '3306'
+
+BADGR_CFG_DIR: "{{ COMMON_CFG_DIR }}/badgr"
+
+
+badgr_server_repo: "https://github.com/concentricsky/badgr-server.git"
+badgr_server_version: 'master'
+
+badgr_server_user: badgr_server
+badgr_server_app_dir: "{{ COMMON_APP_DIR }}/badgr_server"
+badgr_server_code_dir: "{{ badgr_server_app_dir }}/badgr_server"
+badgr_server_venvs_dir: "{{ badgr_server_app_dir }}/venvs"
+badgr_server_venv_dir: "{{ badgr_server_venvs_dir }}/badgr_server"
+badgr_server_venv_bin: "{{ badgr_server_venv_dir }}/bin"
+badgr_server_git_ssh: /tmp/git_ssh.sh
+badgr_server_git_identity: "{{ badgr_server_app_dir }}/badgr_server-git-identity"
+badgr_server_requirements_file: "{{ badgr_server_code_dir }}/requirements.txt"
+badgr_server_edx_ansible_app_dir: "{{ COMMON_APP_DIR }}/edx_ansible"
+badgr_server_role_dir: "{{ badgr_server_edx_ansible_app_dir }}/edx_ansible/playbooks/roles/badgr_server"
+badgr_server_role_templates_dir: "{{ badgr_server_role_dir }}/templates"
+badgr_server_template_settings_dir: "{{ badgr_server_role_templates_dir }}/{{ badgr_server_code_dir }}/apps/mainsite"
+
+badgr_server_edx_ansible_var_file: "{{ badgr_server_edx_ansible_app_dir }}/server-vars.yml"
+
+badgr_server_log_dir: "{{ COMMON_LOG_DIR }}/badgr_server"
+
+badgr_server_settings_subdir: "apps/mainsite"
+badgr_server_settings_dir: "{{ badgr_server_code_dir }}/{{ badgr_server_settings_subdir }}"
+
+# gunicorn ports/hosts, these shouldn't need to be overridden
+badgr_server_gunicorn_port: 4004
+badgr_server_gunicorn_host: 127.0.0.1
+
+
+BADGR_SERVER_LANG: 'en-us'
+BADGR_SERVER_ENV: 'apps.mainsite.settings_local'
+badgr_server_deploy_path: "{{ badgr_server_venv_bin }}:{{ badgr_server_code_dir }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+
+# badgr_server_env_config:
+
+BADGR_SERVER_DEBUG: True
+BADGR_SERVER_TIME_ZONE: 'America/Los_Angeles'
+BADGR_SERVER_LANGUAGE_CODE: '{{ BADGR_SERVER_LANG }}'
+BADGR_SERVER_HTTP_ORIGIN: "http://localhost:4044"
+BADGR_SERVER_DATABASES:
+  default:
+    ENGINE: 'django.db.backends.sqlite3' # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+    NAME: os.path.join(TOP_DIR, 'local.sqlite3') # Or path to database file if using sqlite3.
+    USER: '' # Not used with sqlite3.
+    PASSWORD: '' # Not used with sqlite3.
+    HOST: '' # Set to empty string for localhost. Not used with sqlite3.
+    PORT: '' # Set to empty string for default. Not used with sqlite3.
+# celery
+BADGR_SERVER_BROKER_URL: 'amqp://localhost:5672/'
+BADGR_SERVER_CELERY_RESULT_BACKEND: 'djcelery.backends.cache:CacheBackend'
+BADGR_SERVER_CELERY_TASK_SERIALIZER: 'json'
+BADGR_SERVER_CELERY_RESULTS_SERIALIZER: 'json'
+BADGR_SERVER_CELERY_ACCEPT_CONTENT: ['json']
+# Optionally restrict issuer creation to accounts that have the 'issuer.add_issuer' permission
+BADGR_SERVER_BADGR_APPROVED_ISSUERS_ONLY: True
+# If you have an informational front page outside the Django site that can link back to '/login', specify it here 
+BADGR_SERVER_ROOT_INFO_REDIRECT: '/login'
+# Run celery tasks in same thread as webserver
+BADGR_SERVER_CELERY_ALWAYS_EAGER: True
+BADGR_SERVER_EMAIL_BACKEND: 'django.core.mail.backends.console.EmailBackend'
+BADGR_SERVER_DEFAULT_FROM_EMAIL: ''
+
+BADGR_SERVER_AUTOMATED_USERS:
+  automated_user:
+    sudo_commands:
+      - command: "{{ badgr_server_venv_bin }}/python {{ badgr_server_code_dir }}/manage.py lms migrate --list --settings={{ badgr_server_settings }}"
+        sudo_user: "badgr_server"
+    authorized_keys:
+      - "SSH authorized key"
+
+
+
+badgr_server_local_databases:
+  - "{{ BADGR_SERVER_MYSQL_DB_NAME | default(None) }}"
+
+badgr_server_local_database_users:
+  - {
+      db: "{{ BADGR_SERVER_DEFAULT_DB_NAME | default(None) }}",
+      user: "{{ BADGR_SERVER_MYSQL_USER | default(None) }}",
+      pass: "{{ BADGR_SERVER_MYSQL_PASSWORD | default(None) }}"
+    }

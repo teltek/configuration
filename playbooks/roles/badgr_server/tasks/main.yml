@@ -1,0 +1,66 @@
+---
+- name: create application user
+  user:
+    name: "{{ badgr_server_user }}"
+    home: "{{ badgr_server_app_dir }}"
+    createhome: no
+    shell: /bin/false
+  tags:
+    - install
+    - install:base
+
+- name: create badgr user dirs
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ badgr_server_user }}"
+    group: "{{ common_web_group }}"
+    mode: "{{ item.mode | default(0755) }}"
+  with_items:
+    - { path: "{{ badgr_server_app_dir }}" }
+    # needed for the ansible 1.5 git module
+    - { path: "{{ badgr_server_app_dir }}/.ssh" }
+    - { path: "{{ badgr_server_venvs_dir }}" }
+  tags:
+    - install
+    - install:base
+
+- name: create badgr server log dir
+  file:
+    path: "{{ badgr_server_log_dir }}"
+    state: directory
+    owner: "{{ common_log_user }}"
+    group: "{{ common_log_user }}"
+  tags:
+    - install
+    - install:base
+
+- name: create databases
+  mysql_db:
+    db: "{{ item }}"
+    state: present
+    encoding: utf8
+  when: item != None and item != ''
+  with_items: "{{ badgr_server_local_databases }}"
+
+- name: create database users
+  mysql_user:
+    name: "{{ item.user }}"
+    password: "{{ item.pass }}"
+    priv: "{{ item.db }}.*:ALL"
+    append_privs: yes
+  when: item.db != None and item.db != ''
+  with_items: "{{ badgr_server_local_database_users }}"
+
+- name: setup the migration db user
+  mysql_user:
+    name: "{{ COMMON_MYSQL_MIGRATE_USER }}"
+    password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
+    priv: "{{ item }}.*:ALL"
+    append_privs: yes
+  when: item != None and item != ''
+  with_items: "{{ badgr_server_local_databases }}"
+
+- include: deploy.yml
+  tags:
+    - deploy

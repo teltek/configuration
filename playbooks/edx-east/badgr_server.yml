@@ -1,0 +1,23 @@
+- name: Deploy badgr server
+  hosts: all
+  become: True
+  gather_facts: True
+  vars:
+    serial_count: 1
+    CLUSTER_NAME: 'badgr_server'
+  serial: "{{ serial_count }}"
+  roles:
+   - role: automated
+     AUTOMATED_USERS: "{{ EDXAPP_AUTOMATED_USERS | default({}) }}"
+   - role: nginx
+     nginx_sites:
+     - badgr_server
+   - badgr_server
+   - role: datadog
+     when: COMMON_ENABLE_DATADOG
+   - role: splunkforwarder
+     when: COMMON_ENABLE_SPLUNKFORWARDER
+   - role: newrelic
+     when: COMMON_ENABLE_NEWRELIC
+   - role: minos
+     when: COMMON_ENABLE_MINOS

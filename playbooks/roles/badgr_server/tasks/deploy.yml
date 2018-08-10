@@ -1,0 +1,130 @@
+---
+- name: Writing supervisor script for badgr server
+  template:
+    src: badgr_server.conf.j2
+    dest: "{{ supervisor_available_dir }}/badgr_server.conf"
+    owner: "{{ supervisor_user }}"
+    mode: "0644"
+
+- name: Enable supervisor script for badgr server
+  file:
+    src: "{{ supervisor_available_dir }}/badgr_server.conf"
+    dest: "{{ supervisor_cfg_dir }}/badgr_server.conf"
+    owner: "{{ supervisor_user }}"
+    state: link
+    force: yes
+    mode: "0644"
+  when: not disable_edx_services
+
+- name: Create ssh script for git
+  template:
+    src: "{{ badgr_server_git_ssh | basename }}.j2"
+    dest: "{{ badgr_server_git_ssh }}"
+    owner: "{{ badgr_server_user }}"
+    mode: "0750"
+
+# This key is only needed if you are pulling down a private
+# badgr server repo
+- name: Install read-only ssh key for the badgr_server repo
+  copy:
+    content: "{{ BADGR_SERVER_GIT_IDENTITY }}"
+    dest: "{{ badgr_server_git_identity }}"
+    force: yes
+    owner: "{{ badgr_server_user }}"
+    mode: "0600"
+  when: BADGR_SERVER_GIT_IDENTITY != "none"
+
+- name: "Checkout badgr server repo into {{ badgr_server_code_dir }}"
+  git:
+    dest: "{{ badgr_server_code_dir }}"
+    repo: "{{ badgr_server_repo }}"
+    version: "{{ badgr_server_version }}"
+    accept_hostkey: yes
+  become_user: "{{ badgr_server_user }}"
+  environment:
+    GIT_SSH: "{{ badgr_server_git_ssh }}"
+  register: badgr_server_checkout
+  when: BADGR_SERVER_GIT_IDENTITY != "none"
+
+- name: Checkout badgr server repo into {{ badgr_server_code_dir }}
+  git:
+    dest: "{{ badgr_server_code_dir }}"
+    repo: "{{ badgr_server_repo }}"
+    version: "{{ badgr_server_version }}"
+    accept_hostkey: yes
+  become_user: "{{ badgr_server_user }}"
+  register: badgr_server_checkout
+  when: BADGR_SERVER_GIT_IDENTITY == "none"
+
+- name: Remove read-only ssh key for the badgr_server repo
+  file:
+    path: "{{ badgr_server_git_identity }}"
+    state: absent
+  when: BADGR_SERVER_GIT_IDENTITY != "none"
+
+- name: Install python requirements
+  pip:
+    requirements: "{{ badgr_server_requirements_file }}"
+    virtualenv: "{{ badgr_server_venv_dir }}"
+    state: present
+    extra_args: "-i {{ COMMON_PYPI_MIRROR_URL }}"
+  become_user: "{{ badgr_server_user }}"
+
+- name: Create badgr server application config settings local file
+  template:
+    src: "{{ badgr_server_template_settings_dir }}/{{ item.src }}"
+    dest: "{{ badgr_server_settings_dir }}/{{ item.dest }}"
+    owner: "{{ badgr_server_user }}"
+    group: "{{ common_web_user }}"
+    mode: "0640"
+  with_items:
+    - { src: 'settings_local.py.j2', dest: 'settings_local.py' }
+
+# - name: Migrate for setting up database tables
+# ./manage.py migrate - set up database tables
+
+# - name: Generate docs swagger files
+# ./manage.py dist - generate docs swagger file(s)
+
+# - name: Create superuser
+# ./manage.py createsuperuser - follow prompts to create your first admin user account
+
+
+  # call supervisorctl update. this reloads
+  # the supervisorctl config and restarts
+  # the services if any of the configurations
+  # have changed.
+  #
+- name: Update supervisor configuration
+  shell:  "{{ supervisor_ctl }} -c {{ supervisor_cfg }} update"
+  register: supervisor_update
+  become_user: "{{ supervisor_service_user }}"
+  changed_when: supervisor_update.stdout is defined and supervisor_update.stdout != ""
+  when: not disable_edx_services
+
+- name: Ensure badgr_server has started
+  supervisorctl:
+    name: badgr_server
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: started
+  become_user: "{{ supervisor_service_user }}"
+  when: not disable_edx_services
+
+- name: Create a symlink for venv python
+  file:
+    src: "{{ badgr_server_venv_bin }}/{{ item }}"
+    dest: "{{ COMMON_BIN_DIR }}/{{ item }}.badgr_server"
+    state: link
+  with_items:
+    - python
+    - pip
+
+- name: Restart badgr_server
+  supervisorctl:
+    name: badgr_server
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  when: not disable_edx_services
+
