@@ -29,8 +29,8 @@
   file:
     path: "{{ badgr_server_log_dir }}"
     state: directory
-    owner: "{{ common_log_user }}"
-    group: "{{ common_log_user }}"
+    owner: "{{ common_web_user }}"
+    group: "{{ common_web_user }}"
   tags:
     - install
     - install:base
