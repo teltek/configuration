@@ -61,6 +61,66 @@
   when: item != None and item != ''
   with_items: "{{ badgr_server_local_databases }}"
 
+# adding chris-lea nodejs repo
+# TODO: 16.04
+- name: add ppas for current versions of nodejs
+  apt_repository:
+    repo: "{{ badgr_server_chrislea_ppa }}"
+  when: ansible_distribution_release == 'precise'
+  tags:
+    - install
+    - install:base
+
+- name: install system packages on which Badgr Server and UI rely
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ badgr_server_debian_pkgs }}"
+  tags:
+    - install
+    - install:base
+
+- name: Install nodeenv
+  pip:
+    name: "nodeenv"
+    version: "1.1.1"
+    virtualenv: "{{ badgr_server_venv_dir }}"
+    state: present
+    extra_args: "-i {{ COMMON_PYPI_MIRROR_URL }}"
+  become_user: "{{ badgr_server_user }}"
+
+
+- name: create nodeenv
+  shell: "{{ badgr_server_venv_dir }}/bin/nodeenv {{ badgr_server_nodeenv_dir }} --node={{ badgr_server_node_version }} --prebuilt --force"
+  tags:
+    - install
+    - install:system-requirements
+
+# # Set the npm registry
+# # This needs to be done as root since npm is weird about
+# # chown - https://github.com/npm/npm/issues/3565
+# - name: Set the npm registry
+#   shell: "npm config set registry '{{ COMMON_NPM_MIRROR_URL }}'"
+#   args:
+#     creates: "{{ badgr_server_app_dir }}/.npmrc"
+#   environment: "{{ badgr_server_environment }}"
+#   tags:
+#     - install
+#     - install:app-requirements
+
+# # Set the npm registry permissions
+# - name: Set the npm registry permissions
+#   file:
+#     path: "{{ badgr_server_app_dir }}/.npmrc"
+#     owner: "{{ badgr_server_user }}"
+#     group: "{{ badgr_server_user }}"
+#   tags:
+#     - install
+#     - install:app-requirements
+
+
+
 - include: deploy.yml
   tags:
     - deploy

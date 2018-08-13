@@ -99,7 +99,7 @@
     chdir: "{{ badgr_server_code_dir }}"
   environment: "{{ badgr_server_environment }}"
   tags:
-    - install
+    - dbinstall
 
   # call supervisorctl update. this reloads
   # the supervisorctl config and restarts
@@ -139,3 +139,6 @@
     state: restarted
   when: not disable_edx_services
 
+- include: badgr_ui_deploy.yml
+  tags:
+    - deploy

@@ -60,7 +60,7 @@ badgr_server_gunicorn_host: 127.0.0.1
 
 BADGR_SERVER_LANG: 'en'
 BADGR_SERVER_ENV: 'apps.mainsite.settings_local'
-badgr_server_deploy_path: "{{ badgr_server_venv_bin }}:{{ badgr_server_code_dir }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+badgr_server_deploy_path: "{{ badgr_server_venv_bin }}:{{ badgr_server_code_dir }}/bin:{{ badgr_server_node_bin }}:{{ badgr_server_nodeenv_bin }}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 
 # badgr_server_env_config:
@@ -123,3 +123,34 @@ badgr_server_environment:
 badgr_server_superuser_username: 'superadmin'
 badgr_server_superuser_email: 'superadmin@example.com'
 badgr_server_superuser_password: 'edx'
+
+# BADGR UI SERVER VARS
+
+badgr_ui_code_dir: "{{ badgr_server_app_dir }}/badgr_ui"
+
+BADGR_UI_SITE_NAME: 'localhost'
+BADGR_UI_NGINX_PORT: 4048
+BADGR_UI_SSL_NGINX_PORT: 44000
+BADGR_UI_PYTHON_PORT: 4000
+BADGR_UI_BASE: "{{ BADGR_UI_SITE_NAME }}:{{ BADGR_UI_NGINX_PORT }}"
+
+badgr_ui_repo: "https://github.com/concentricsky/badgr-ui.git"
+badgr_ui_version: 'master'
+
+# gunicorn ports/hosts, these shouldn't need to be overridden
+badgr_ui_gunicorn_port: 4000
+badgr_ui_gunicorn_host: 127.0.0.1
+
+
+
+
+
+badgr_server_nodeenv_dir: "{{ badgr_server_app_dir }}/nodeenvs/badgr_server"
+badgr_server_nodeenv_bin: "{{ badgr_server_nodeenv_dir }}/bin"
+badgr_server_node_version: "{{ common_node_version }}"
+# This is where node installs modules, not node itself
+badgr_server_node_bin: "{{ badgr_ui_code_dir }}/node_modules/.bin"
+badgr_server_chrislea_ppa: "ppa:chris-lea/node.js"
+badgr_server_debian_pkgs:
+  - nodejs
+

@@ -1,0 +1,154 @@
+---
+- name: Writing supervisor script for badgr ui
+  template:
+    src: badgr_ui.conf.j2
+    dest: "{{ supervisor_available_dir }}/badgr_ui.conf"
+    owner: "{{ supervisor_user }}"
+    mode: "0644"
+
+- name: Enable supervisor script for badgr ui
+  file:
+    src: "{{ supervisor_available_dir }}/badgr_ui.conf"
+    dest: "{{ supervisor_cfg_dir }}/badgr_ui.conf"
+    owner: "{{ supervisor_user }}"
+    state: link
+    force: yes
+    mode: "0644"
+  when: not disable_edx_services
+
+# This key is only needed if you are pulling down a private
+# badgr server repo
+- name: Install read-only ssh key for the badgr_server repo
+  copy:
+    content: "{{ BADGR_SERVER_GIT_IDENTITY }}"
+    dest: "{{ badgr_server_git_identity }}"
+    force: yes
+    owner: "{{ badgr_server_user }}"
+    mode: "0600"
+  when: BADGR_SERVER_GIT_IDENTITY != "none"
+
+
+
+
+- name: "Checkout badgr ui repo into {{ badgr_ui_code_dir }}"
+  git:
+    dest: "{{ badgr_ui_code_dir }}"
+    repo: "{{ badgr_ui_repo }}"
+    version: "{{ badgr_ui_version }}"
+    accept_hostkey: yes
+  become_user: "{{ badgr_server_user }}"
+  environment:
+    GIT_SSH: "{{ badgr_server_git_ssh }}"
+  register: badgr_ui_checkout
+  when: BADGR_SERVER_GIT_IDENTITY != "none"
+
+- name: Checkout badgr ui repo into {{ badgr_ui_code_dir }}
+  git:
+    dest: "{{ badgr_ui_code_dir }}"
+    repo: "{{ badgr_ui_repo }}"
+    version: "{{ badgr_ui_version }}"
+    accept_hostkey: yes
+  become_user: "{{ badgr_server_user }}"
+  register: badgr_ui_checkout
+  when: BADGR_SERVER_GIT_IDENTITY == "none"
+
+- name: Remove read-only ssh key for the badgr_ui repo
+  file:
+    path: "{{ badgr_server_git_identity }}"
+    state: absent
+  when: BADGR_SERVER_GIT_IDENTITY != "none"
+
+
+- name: install node dependencies
+  npm:
+    executable: "{{ badgr_server_nodeenv_bin }}/npm"
+    path: "{{ badgr_ui_code_dir }}"
+    production: yes
+    state: latest
+  environment: "{{ badgr_server_environment }}"
+  become_user: "{{ badgr_server_user }}"
+  tags:
+    - install
+    - install:app-requirements
+
+
+# - name: Install npm nodejs
+#   apt:
+#     name: "nodejs"
+#     install_recommends: yes
+#     state: present 
+#     update_cache: yes
+#   when: ansible_distribution == 'Ubuntu'
+
+- name: Fix Install npm nodejs I
+  shell: "npm cache clean -f"
+  become_user: "root"
+
+- name: Fix Install npm nodejs II
+  shell: "npm install -g n"
+  become_user: "root"
+
+- name: Fix Install npm nodejs III
+  shell: "n stable"
+  become_user: "root"
+
+- name: npm install dependencies
+  shell: "npm install"
+  args:
+    chdir: "{{ badgr_ui_code_dir }}"
+  environment: "{{ badgr_server_environment }}"
+  become_user: "{{ badgr_server_user }}"
+
+# - name: npm fix install dependencies I
+#   shell: "npm audit fix"
+#   args:
+#     chdir: "{{ badgr_ui_code_dir }}"
+#   environment: "{{ badgr_ui_environment }}"
+#   become_user: "{{ badgr_ui_user }}"
+
+- name: npm install ajv and tslint
+  shell: "npm install ajv@^5.0.0 tslint@^4.0.0"
+  args:
+    chdir: "{{ badgr_ui_code_dir }}"
+  environment: "{{ badgr_server_environment }}"
+  become_user: "{{ badgr_server_user }}"
+
+# - name: Create badgr ui application config settings local file
+#   template:
+#     src: "{{ badgr_ui_template_settings_dir }}/{{ item.src }}"
+#     dest: "{{ badgr_ui_settings_dir }}/{{ item.dest }}"
+#     owner: "{{ badgr_ui_user }}"
+#     group: "{{ common_web_user }}"
+#     mode: "0640"
+#   with_items:
+#     - { src: 'settings_local.py.j2', dest: 'settings_local.py' }
+
+  # call supervisorctl update. this reloads
+  # the supervisorctl config and restarts
+  # the services if any of the configurations
+  # have changed.
+  #
+- name: Update supervisor configuration
+  shell:  "{{ supervisor_ctl }} -c {{ supervisor_cfg }} update"
+  register: supervisor_update
+  become_user: "{{ supervisor_service_user }}"
+  changed_when: supervisor_update.stdout is defined and supervisor_update.stdout != ""
+  when: not disable_edx_services
+
+- name: Ensure badgr_ui has started
+  supervisorctl:
+    name: badgr_ui
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: started
+  become_user: "{{ supervisor_service_user }}"
+  when: not disable_edx_services
+
+- name: Restart badgr_ui
+  supervisorctl:
+    name: badgr_ui
+    supervisorctl_path: "{{ supervisor_ctl }}"
+    config: "{{ supervisor_cfg }}"
+    state: restarted
+  when: not disable_edx_services
+
