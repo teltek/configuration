@@ -1,13 +1,11 @@
 [program:badgr_server]
 command={{ badgr_server_venv_bin }}/python {{ badgr_server_code_dir }}/manage.py runserver {{ BADGR_SERVER_PYTHON_PORT }}
-#command= executable  -c {{ badgr_server_app_dir }}/badgr_server_gunicorn.py badgr_server.wsgi
 
 priority=999
-environment=SERVICE_VARIANT="badgr_server",HOME="/"
 user={{ common_web_user }}
 
 directory={{ badgr_server_code_dir }}
-environment=PORT={{ badgr_server_gunicorn_port }},ADDRESS={{ badgr_server_gunicorn_host }},LANG={{ BADGR_SERVER_LANG }},DJANGO_SETTINGS_MODULE={{ BADGR_SERVER_ENV }},SERVICE_VARIANT="badgr_server",PATH="{{ badgr_server_deploy_path }}"
+environment=PORT={{ badgr_server_gunicorn_port }},ADDRESS={{ badgr_server_gunicorn_host }},LANG={{ BADGR_SERVER_LANG }},DJANGO_SETTINGS_MODULE={{ BADGR_SERVER_ENV }},SERVICE_VARIANT="badgr_server",PATH="{{ badgr_server_deploy_path }}",HOME="/"
 
 stdout_logfile={{ supervisor_log_dir }}/%(program_name)s-stdout.log
 stderr_logfile={{ supervisor_log_dir }}/%(program_name)s-stderr.log

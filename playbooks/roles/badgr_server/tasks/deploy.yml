@@ -80,15 +80,26 @@
   with_items:
     - { src: 'settings_local.py.j2', dest: 'settings_local.py' }
 
-# - name: Migrate for setting up database tables
-# ./manage.py migrate - set up database tables
+- name: migrate to set up database tables
+  shell: "{{ badgr_server_venv_dir }}/bin/python manage.py migrate"
+  args:
+    chdir: "{{ badgr_server_code_dir }}"
+  environment: "{{ badgr_server_environment }}"
 
-# - name: Generate docs swagger files
-# ./manage.py dist - generate docs swagger file(s)
+- name: migrate to set up database tables
+  shell: "{{ badgr_server_venv_dir }}/bin/python manage.py dist"
+  args:
+    chdir: "{{ badgr_server_code_dir }}"
+  environment: "{{ badgr_server_environment }}"
 
-# - name: Create superuser
-# ./manage.py createsuperuser - follow prompts to create your first admin user account
-
+- name: Create superuser admin account
+  shell: "{{ badgr_server_venv_dir }}/bin/python manage.py shell -c \"from badgeuser.models import BadgeUser; BadgeUser.objects.create_superuser('{{ badgr_server_superuser_username }}', '{{ badgr_server_superuser_email }}', '{{ badgr_server_superuser_password }}')\""
+  become_user: "{{ common_web_user }}"
+  args:
+    chdir: "{{ badgr_server_code_dir }}"
+  environment: "{{ badgr_server_environment }}"
+  tags:
+    - install
 
   # call supervisorctl update. this reloads
   # the supervisorctl config and restarts

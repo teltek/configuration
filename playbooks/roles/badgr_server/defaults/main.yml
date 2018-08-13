@@ -21,12 +21,10 @@ BADGR_SERVER_MYSQL_PASSWORD: 'password'
 BADGR_SERVER_MYSQL_PASSWORD_READ_ONLY: 'password'
 BADGR_SERVER_MYSQL_PASSWORD_ADMIN: 'password'
 
-
-
-BADGR_SERVER_MYSQL_CONN_MAX_AGE: 0
-
 BADGR_SERVER_MYSQL_HOST: 'localhost'
 BADGR_SERVER_MYSQL_PORT: '3306'
+
+BADGR_SERVER_MYSQL_CONN_MAX_AGE: 0
 
 BADGR_CFG_DIR: "{{ COMMON_CFG_DIR }}/badgr"
 
@@ -60,7 +58,7 @@ badgr_server_gunicorn_port: 4004
 badgr_server_gunicorn_host: 127.0.0.1
 
 
-BADGR_SERVER_LANG: 'en-us'
+BADGR_SERVER_LANG: 'en'
 BADGR_SERVER_ENV: 'apps.mainsite.settings_local'
 badgr_server_deploy_path: "{{ badgr_server_venv_bin }}:{{ badgr_server_code_dir }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
@@ -73,12 +71,12 @@ BADGR_SERVER_LANGUAGE_CODE: '{{ BADGR_SERVER_LANG }}'
 BADGR_SERVER_HTTP_ORIGIN: "http://localhost:4044"
 BADGR_SERVER_DATABASES:
   default:
-    ENGINE: 'django.db.backends.sqlite3' # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-    NAME: os.path.join(TOP_DIR, 'local.sqlite3') # Or path to database file if using sqlite3.
-    USER: '' # Not used with sqlite3.
-    PASSWORD: '' # Not used with sqlite3.
-    HOST: '' # Set to empty string for localhost. Not used with sqlite3.
-    PORT: '' # Set to empty string for default. Not used with sqlite3.
+    ENGINE: 'django.db.backends.mysql' # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+    NAME: '{{ BADGR_SERVER_MYSQL_DB_NAME }}' # Or path to database file if using sqlite3.
+    USER: '{{ BADGR_SERVER_MYSQL_USER }}' # Not used with sqlite3.
+    PASSWORD: '{{ BADGR_SERVER_MYSQL_PASSWORD }}' # Not used with sqlite3.
+    HOST: '{{ BADGR_SERVER_MYSQL_HOST }}' # Set to empty string for localhost. Not used with sqlite3.
+    PORT: '{{ BADGR_SERVER_MYSQL_PORT }}' # Set to empty string for default. Not used with sqlite3.
 # celery
 BADGR_SERVER_BROKER_URL: 'amqp://localhost:5672/'
 BADGR_SERVER_CELERY_RESULT_BACKEND: 'djcelery.backends.cache:CacheBackend'
@@ -113,3 +111,15 @@ badgr_server_local_database_users:
       user: "{{ BADGR_SERVER_MYSQL_USER | default(None) }}",
       pass: "{{ BADGR_SERVER_MYSQL_PASSWORD | default(None) }}"
     }
+
+BADGR_SERVER_DJANGO_SETTINGS_MODULE: "{{ BADGR_SERVER_ENV }}"
+
+badgr_server_environment:
+  DJANGO_SETTINGS_MODULE: "{{ BADGR_SERVER_DJANGO_SETTINGS_MODULE }}"
+  BADGR_SERVER_CFG: "{{ badgr_server_settings_dir }}/settings_local.py"
+  PATH: "{{ badgr_server_venv_dir }}/bin:{{ ansible_env.PATH }}"
+
+
+badgr_server_superuser_username: 'superadmin'
+badgr_server_superuser_email: 'superadmin@example.com'
+badgr_server_superuser_password: 'edx'
