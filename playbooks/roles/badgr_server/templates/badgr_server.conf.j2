@@ -1,5 +1,5 @@
 [program:badgr_server]
-command={{ badgr_server_venv_bin }}/python {{ badgr_server_code_dir }}/manage.py runserver {{ BADGR_SERVER_PYTHON_PORT }}
+command={{ badgr_server_venv_bin }}/python {{ badgr_server_code_dir }}/manage.py runserver {{ BADGR_SERVER_PYTHON_PORT }} --settings=apps.mainsite.settings_local
 
 priority=999
 user={{ common_web_user }}
