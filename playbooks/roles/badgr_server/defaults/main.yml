@@ -55,6 +55,9 @@ badgr_server_log_dir: "{{ COMMON_LOG_DIR }}/badgr_server"
 
 badgr_server_settings_dir: "{{ badgr_server_code_dir }}/{{ badgr_server_settings_subdir }}"
 
+badgr_server_data_dir: "{{ COMMON_DATA_DIR }}/badgr_server"
+badgr_server_media_dir: "{{ badgr_server_data_dir }}/mediafiles"
+
 # gunicorn ports/hosts, these shouldn't need to be overridden
 badgr_server_gunicorn_port: 4004
 badgr_server_gunicorn_host: 127.0.0.1

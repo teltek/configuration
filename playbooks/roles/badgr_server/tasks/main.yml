@@ -61,6 +61,20 @@
   when: item != None and item != ''
   with_items: "{{ badgr_server_local_databases }}"
 
+- name: create web-writable badgr_server data dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ common_web_user }}"
+    group: "{{ badgr_server_user }}"
+    mode: "0775"
+  with_items:
+    - "{{ badgr_server_media_dir }}"
+  tags:
+    - install
+    - install:base
+    - dbinstall
+
 - include: deploy.yml
   tags:
     - deploy
