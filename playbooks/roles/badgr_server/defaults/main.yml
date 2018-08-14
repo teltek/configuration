@@ -84,7 +84,7 @@ BADGR_SERVER_DATABASES:
     PORT: '{{ BADGR_SERVER_MYSQL_PORT }}' # Set to empty string for default. Not used with sqlite3.
 # celery
 BADGR_SERVER_BROKER_URL: 'amqp://localhost:5672/'
-BADGR_SERVER_CELERY_RESULT_BACKEND: 'celery.backends.cache:CacheBackend'
+BADGR_SERVER_CELERY_RESULT_BACKEND: 'djcelery.backends.cache:CacheBackend'
 BADGR_SERVER_CELERY_TASK_SERIALIZER: 'json'
 BADGR_SERVER_CELERY_RESULTS_SERIALIZER: 'json'
 BADGR_SERVER_CELERY_ACCEPT_CONTENT: ['json']
