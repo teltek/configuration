@@ -12,6 +12,8 @@ BADGR_SERVER_NGINX_PORT: 4044
 BADGR_SERVER_SSL_NGINX_PORT: 44004
 BADGR_SERVER_PYTHON_PORT: 4004
 BADGR_SERVER_BASE: "{{ BADGR_SERVER_SITE_NAME }}:{{ BADGR_SERVER_NGINX_PORT }}"
+BADGR_SERVER_NO_SSL_URL: 'http://{{ BADGR_SERVER_BASE }}'
+BADGR_SERVER_SSL_URL: 'https://{{ BADGR_SERVER_SITE_NAME }}:{{ BADGR_SERVER_SSL_NGINX_PORT }}'
 
 BADGR_SERVER_DEFAULT_DB_NAME: 'badgr_server'
 BADGR_SERVER_MYSQL_DB_NAME: 'badgr_server'
@@ -44,13 +46,13 @@ badgr_server_requirements_file: "{{ badgr_server_code_dir }}/requirements.txt"
 badgr_server_edx_ansible_app_dir: "{{ COMMON_APP_DIR }}/edx_ansible"
 badgr_server_role_dir: "{{ badgr_server_edx_ansible_app_dir }}/edx_ansible/playbooks/roles/badgr_server"
 badgr_server_role_templates_dir: "{{ badgr_server_role_dir }}/templates"
-badgr_server_template_settings_dir: "{{ badgr_server_role_templates_dir }}/{{ badgr_server_code_dir }}/apps/mainsite"
+badgr_server_settings_subdir: "apps/mainsite"
+badgr_server_template_settings_dir: "{{ badgr_server_role_templates_dir }}/{{ badgr_server_code_dir }}/{{ badgr_server_settings_subdir }}"
 
 badgr_server_edx_ansible_var_file: "{{ badgr_server_edx_ansible_app_dir }}/server-vars.yml"
 
 badgr_server_log_dir: "{{ COMMON_LOG_DIR }}/badgr_server"
 
-badgr_server_settings_subdir: "apps/mainsite"
 badgr_server_settings_dir: "{{ badgr_server_code_dir }}/{{ badgr_server_settings_subdir }}"
 
 # gunicorn ports/hosts, these shouldn't need to be overridden
@@ -140,3 +142,7 @@ badgr_ui_version: 'master'
 # gunicorn ports/hosts, these shouldn't need to be overridden
 badgr_ui_gunicorn_port: 4000
 badgr_ui_gunicorn_host: 127.0.0.1
+
+badgr_ui_settings_subdir: "src/app/common/services"
+badgr_ui_template_settings_dir: "{{ badgr_server_role_templates_dir }}/{{ badgr_ui_code_dir }}/{{ badgr_ui_settings_subdir }}"
+badgr_ui_settings_dir: "{{ badgr_ui_code_dir }}/{{ badgr_ui_settings_subdir }}"
