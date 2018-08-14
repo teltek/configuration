@@ -27,9 +27,6 @@
     mode: "0600"
   when: BADGR_SERVER_GIT_IDENTITY != "none"
 
-
-
-
 - name: "Checkout badgr ui repo into {{ badgr_ui_code_dir }}"
   git:
     dest: "{{ badgr_ui_code_dir }}"
@@ -58,27 +55,13 @@
     state: absent
   when: BADGR_SERVER_GIT_IDENTITY != "none"
 
-
-- name: install node dependencies
-  npm:
-    executable: "{{ badgr_server_nodeenv_bin }}/npm"
-    path: "{{ badgr_ui_code_dir }}"
-    production: yes
-    state: latest
-  environment: "{{ badgr_server_environment }}"
-  become_user: "{{ badgr_server_user }}"
-  tags:
-    - install
-    - install:app-requirements
-
-
-# - name: Install npm nodejs
-#   apt:
-#     name: "nodejs"
-#     install_recommends: yes
-#     state: present 
-#     update_cache: yes
-#   when: ansible_distribution == 'Ubuntu'
+- name: Install npm nodejs
+  apt:
+    name: "nodejs"
+    install_recommends: yes
+    state: present
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu'
 
 - name: Fix Install npm nodejs I
   shell: "npm cache clean -f"
@@ -94,20 +77,6 @@
 
 - name: npm install dependencies
   shell: "npm install"
-  args:
-    chdir: "{{ badgr_ui_code_dir }}"
-  environment: "{{ badgr_server_environment }}"
-  become_user: "{{ badgr_server_user }}"
-
-# - name: npm fix install dependencies I
-#   shell: "npm audit fix"
-#   args:
-#     chdir: "{{ badgr_ui_code_dir }}"
-#   environment: "{{ badgr_ui_environment }}"
-#   become_user: "{{ badgr_ui_user }}"
-
-- name: npm install ajv and tslint
-  shell: "npm install ajv@^5.0.0 tslint@^4.0.0"
   args:
     chdir: "{{ badgr_ui_code_dir }}"
   environment: "{{ badgr_server_environment }}"
