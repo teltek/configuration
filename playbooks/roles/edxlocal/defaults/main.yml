@@ -15,6 +15,7 @@ edxlocal_databases:
   - "{{ ANALYTICS_API_REPORTS_DB_NAME | default(None) }}"
   - "{{ CREDENTIALS_DEFAULT_DB_NAME | default(None) }}"
   - "{{ DISCOVERY_DEFAULT_DB_NAME | default(None) }}"
+  - "{{ BADGR_SERVER_MYSQL_DB_NAME | default(None) }}"
 
 edxlocal_database_users:
   - {
@@ -66,4 +67,9 @@ edxlocal_database_users:
       db: "{{ DISCOVERY_DEFAULT_DB_NAME | default(None) }}",
       user: "{{ DISCOVERY_MYSQL_USER | default(None) }}",
       pass: "{{ DISCOVERY_MYSQL_PASSWORD | default(None) }}"
+    }
+  - {
+      db: "{{ BADGR_SERVER_DEFAULT_DB_NAME | default(None) }}",
+      user: "{{ BADGR_SERVER_MYSQL_USER | default(None) }}",
+      pass: "{{ BADGR_SERVER_MYSQL_PASSWORD | default(None) }}"
     }

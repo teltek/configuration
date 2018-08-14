@@ -9,11 +9,14 @@ IFS=","
     cat<<EO
 
     Usage: $PROG <repo> <version>
+           $PROG install_badgr_server|update_badgr_server <badgr_server_version> <badgr_ui_version>
             -v        add verbosity to edx_ansible run
             -h        this
 
     <repo> - must be one of edx-platform, edx-workers, xqueue, cs_comments_service, credentials, xserver, configuration, read-only-certificate-code, edx-analytics-data-api, edx-ora2, insights, ecommerce, programs, course_discovery
     <version> - can be a commit or tag
+    <badgr_server_version> - can be a commit or tag
+    <badgr_ui_version> - can be a commit or tag
 
 EO
 IFS=$SAVE_IFS
@@ -60,6 +63,12 @@ repos_to_cmd["ecommerce"]="$edx_ansible_cmd ecommerce.yml -e 'ECOMMERCE_VERSION=
 repos_to_cmd["programs"]="$edx_ansible_cmd programs.yml -e 'PROGRAMS_VERSION=$2'"
 repos_to_cmd["discovery"]="$edx_ansible_cmd discovery.yml -e 'DISCOVERY_VERSION=$2'"
 
+edx_ansible_cmd="{{ edx_ansible_venv_bin }}/ansible-playbook -i localhost, -c local $extra_args"
+repos_to_cmd["install_badgr_server"]="$edx_ansible_cmd badgr_server_sandbox.yml -e 'badgr_server_version=$2' -e 'badgr_ui_version=$3'"
+
+edx_ansible_cmd="{{ edx_ansible_venv_bin }}/ansible-playbook -i localhost, -c local --skip-tags='dbinstall' $extra_args"
+repos_to_cmd["update_badgr_server"]="$edx_ansible_cmd badgr_server.yml -e 'badgr_server_version=$2' -e 'badgr_ui_version=$3'"
+
 
 if [[ -z $1 || -z $2 ]]; then
     echo
@@ -71,6 +80,13 @@ fi
 if [[ -z ${repos_to_cmd[$1]} ]]; then
     echo
     echo "ERROR: Invalid repo name"
+    usage
+    exit 1
+fi
+
+if [[ ( $1 = 'install_badgr_server' || $1 = 'update_badgr_server') && -z $3 ]]; then
+    echo
+    echo "ERROR: You must specify badgr_server and badgr_ui versions"
     usage
     exit 1
 fi

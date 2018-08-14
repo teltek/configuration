@@ -30,6 +30,7 @@
       SWAPFILE_SIZE: 2GB
     - role: nginx
       nginx_sites:
+      - badgr_server
       - certs
       - cms
       - lms
@@ -72,6 +73,7 @@
     - role: xqueue
       update_users: True
     - certs
+    - badgr_server
     - edx_ansible
     - role: datadog
       when: COMMON_ENABLE_DATADOG

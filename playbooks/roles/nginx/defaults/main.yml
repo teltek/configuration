@@ -119,6 +119,16 @@ NGINX_EDXAPP_ERROR_PAGES:
   "502": "{{ nginx_default_error_page }}"
   "504": "{{ nginx_default_error_page }}"
 
+NGINX_BADGR_SERVER_ERROR_PAGES:
+  "500": "{{ nginx_default_error_page }}"
+  "502": "{{ nginx_default_error_page }}"
+  "504": "{{ nginx_default_error_page }}"
+
+NGINX_BADGR_UI_ERROR_PAGES:
+  "500": "{{ nginx_default_error_page }}"
+  "502": "{{ nginx_default_error_page }}"
+  "504": "{{ nginx_default_error_page }}"
+
 CMS_HOSTNAME: '~^((stage|prod)-)?studio.*'
 ECOMMERCE_HOSTNAME: '~^((stage|prod)-)?ecommerce.*'
 PROGRAMS_HOSTNAME: '~^((stage|prod)-)?programs.*'
@@ -150,6 +160,10 @@ nginx_programs_gunicorn_hosts:
   - 127.0.0.1
 nginx_credentails_gunicorn_hosts:
   - 127.0.0.1
+nginx_badgr_server_gunicorn_hosts:
+  - 127.0.0.1
+nginx_badgr_ui_gunicorn_hosts:
+  - 127.0.0.1
 
 nginx_cfg:
   #   - link - turn on
@@ -168,6 +182,8 @@ NGINX_P3P_MESSAGE: 'CP="Open edX does not have a P3P policy."'
 
 COMMON_ENABLE_BASIC_AUTH: False
 
+BADGR_SERVER_ENABLE_BASIC_AUTH: "{{ COMMON_ENABLE_BASIC_AUTH }}"
+BADGR_UI_ENABLE_BASIC_AUTH: "{{ COMMON_ENABLE_BASIC_AUTH }}"
 CERTS_ENABLE_BASIC_AUTH: "{{ COMMON_ENABLE_BASIC_AUTH }}"
 ECOMMERCE_ENABLE_BASIC_AUTH: "{{ COMMON_ENABLE_BASIC_AUTH }}"
 EDXAPP_CMS_ENABLE_BASIC_AUTH: "{{ COMMON_ENABLE_BASIC_AUTH }}"
@@ -180,6 +196,8 @@ XSERVER_ENABLE_BASIC_AUTH: "{{ COMMON_ENABLE_BASIC_AUTH }}"
 
 NGINX_CREATE_HTPASSWD_FILE: >
   {{
+    BADGR_SERVER_ENABLE_BASIC_AUTH|bool or
+    BADGR_UI_ENABLE_BASIC_AUTH|bool or
     CERTS_ENABLE_BASIC_AUTH|bool or
     ECOMMERCE_ENABLE_BASIC_AUTH|bool or
     EDXAPP_CMS_ENABLE_BASIC_AUTH|bool or
