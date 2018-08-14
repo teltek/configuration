@@ -39,13 +39,20 @@
   register: badgr_ui_checkout
   when: BADGR_SERVER_GIT_IDENTITY != "none"
 
+- name: Checkout badgr ui repo service configurations into {{ badgr_ui_code_dir }}
+  shell: "git checkout ."
+  args:
+    chdir: "{{ badgr_ui_code_dir }}"
+  become_user: "{{ badgr_server_user }}"
+  register: badgr_ui_checkout
+  when: BADGR_SERVER_GIT_IDENTITY == "none"
+
 - name: Checkout badgr ui repo into {{ badgr_ui_code_dir }}
   git:
     dest: "{{ badgr_ui_code_dir }}"
     repo: "{{ badgr_ui_repo }}"
     version: "{{ badgr_ui_version }}"
     accept_hostkey: yes
-    force: yes
   become_user: "{{ badgr_server_user }}"
   register: badgr_ui_checkout
   when: BADGR_SERVER_GIT_IDENTITY == "none"
