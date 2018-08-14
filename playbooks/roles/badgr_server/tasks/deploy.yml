@@ -131,6 +131,16 @@
     - python
     - pip
 
+- name: Copy files for badges slugs
+  shell: cp badges/{{ item }} .
+  args:
+    chdir: "/edx/var/edxapp/media/"
+  become_user: "edxapp"
+  with_items:
+    - honor.png
+    - professional.png
+    - verified.png
+
 - name: Restart badgr_server
   supervisorctl:
     name: badgr_server
