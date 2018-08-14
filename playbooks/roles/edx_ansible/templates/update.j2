@@ -84,7 +84,7 @@ if [[ -z ${repos_to_cmd[$1]} ]]; then
     exit 1
 fi
 
-if [[ $1 = 'install_badgr_server' || $1 = 'update_badgr_server'] && [ -z $3 ]]; then
+if [[ ( $1 = 'install_badgr_server' || $1 = 'update_badgr_server') && -z $3 ]]; then
     echo
     echo "ERROR: You must specify badgr_server and badgr_ui versions"
     usage
