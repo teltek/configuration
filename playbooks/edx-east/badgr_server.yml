@@ -7,8 +7,6 @@
     CLUSTER_NAME: 'badgr_server'
   serial: "{{ serial_count }}"
   roles:
-   - role: automated
-     AUTOMATED_USERS: "{{ EDXAPP_AUTOMATED_USERS | default({}) }}"
    - role: nginx
      nginx_sites:
      - badgr_server
