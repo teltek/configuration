@@ -79,9 +79,17 @@
     state: absent
   when: BADGR_SERVER_GIT_IDENTITY != "none"
 
-- name: Install npm nodejs
+- name: Install nodejs
   apt:
     name: "nodejs"
+    install_recommends: yes
+    state: present
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install npm
+  apt:
+    name: "npm"
     install_recommends: yes
     state: present
     update_cache: yes
