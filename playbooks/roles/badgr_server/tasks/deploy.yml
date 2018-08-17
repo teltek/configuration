@@ -118,7 +118,7 @@
   args:
     chdir: "{{ badgr_server_code_dir }}"
   environment: "{{ badgr_server_environment }}"
-  when: queryset == '<QuerySet []>'
+  when: queryset.stdout.find('<QuerySet []>') != -1
   tags:
     - dbinstall
 
