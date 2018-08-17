@@ -50,13 +50,18 @@
   register: badgr_ui_checkout
   when: BADGR_SERVER_GIT_IDENTITY != "none"
 
+- name: Check if badgr ui directory exists
+  stat:
+    path: "{{ badgr_ui_code_dir }}"
+  register: directory_details
+
 - name: Checkout badgr ui repo service configurations into {{ badgr_ui_code_dir }}
   shell: "git checkout ."
   args:
     chdir: "{{ badgr_ui_code_dir }}"
   become_user: "{{ badgr_server_user }}"
   register: badgr_ui_checkout
-  when: BADGR_SERVER_GIT_IDENTITY == "none"
+  when: BADGR_SERVER_GIT_IDENTITY == "none" and directory_details.stat.exists and directory_details.stat.isdir
 
 - name: Checkout badgr ui repo into {{ badgr_ui_code_dir }}
   git:
