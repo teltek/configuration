@@ -22,6 +22,7 @@
     - role: nginx
       nginx_sites:
       - badgr_server
+      - badgr_ui
     - role: nginx
     - role: badgr_server
     - badgr_server
