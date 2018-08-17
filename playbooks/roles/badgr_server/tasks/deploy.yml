@@ -4,7 +4,9 @@
     src: badgr_server.conf.j2
     dest: "{{ supervisor_available_dir }}/badgr_server.conf"
     owner: "{{ supervisor_user }}"
+    group: "{{ supervisor_user }}"
     mode: "0644"
+  become_user: "{{ supervisor_user }}"
 
 - name: Enable supervisor script for badgr server
   file:
@@ -13,8 +15,7 @@
     owner: "{{ supervisor_user }}"
     state: link
     force: yes
-    mode: "0644"
-  when: not disable_edx_services
+  become_user: "{{ supervisor_user }}"
 
 - name: Create ssh script for git
   template:
@@ -22,6 +23,17 @@
     dest: "{{ badgr_server_git_ssh }}"
     owner: "{{ badgr_server_user }}"
     mode: "0750"
+
+# Workaround to fix permissions
+- name: Create supervisor log files for badgr_server
+  file:
+    path: "{{ supervisor_log_dir }}/badgr_server-{{ item }}.log"
+    state: touch
+    owner: "{{ common_web_user }}"
+    group: "{{ common_web_user }}"
+  with_items:
+    - stdout
+    - stderr
 
 # This key is only needed if you are pulling down a private
 # badgr server repo
@@ -92,12 +104,21 @@
     chdir: "{{ badgr_server_code_dir }}"
   environment: "{{ badgr_server_environment }}"
 
+- name: Check superuser admin account
+  shell: "{{ badgr_server_venv_dir }}/bin/python manage.py shell -c \"from badgeuser.models import BadgeUser; print BadgeUser.objects.filter(username='{{ badgr_server_superuser_username }}')\""
+  become_user: "{{ common_web_user }}"
+  args:
+    chdir: "{{ badgr_server_code_dir }}"
+  environment: "{{ badgr_server_environment }}"
+  register: queryset
+
 - name: Create superuser admin account
   shell: "{{ badgr_server_venv_dir }}/bin/python manage.py shell -c \"from badgeuser.models import BadgeUser; BadgeUser.objects.create_superuser('{{ badgr_server_superuser_username }}', '{{ badgr_server_superuser_email }}', '{{ badgr_server_superuser_password }}')\""
   become_user: "{{ common_web_user }}"
   args:
     chdir: "{{ badgr_server_code_dir }}"
   environment: "{{ badgr_server_environment }}"
+  when: queryset == '<QuerySet []>'
   tags:
     - dbinstall
 

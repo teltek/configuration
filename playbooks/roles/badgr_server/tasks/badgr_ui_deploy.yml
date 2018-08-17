@@ -16,6 +16,17 @@
     mode: "0644"
   when: not disable_edx_services
 
+# Workaround to fix permissions
+- name: Create supervisor log files for badgr_ui
+  file:
+    path: "{{ supervisor_log_dir }}/badgr_ui-{{ item }}.log"
+    state: touch
+    owner: "{{ common_web_user }}"
+    group: "{{ common_web_user }}"
+  with_items:
+    - stdout
+    - stderr
+
 # This key is only needed if you are pulling down a private
 # badgr server repo
 - name: Install read-only ssh key for the badgr_server repo
