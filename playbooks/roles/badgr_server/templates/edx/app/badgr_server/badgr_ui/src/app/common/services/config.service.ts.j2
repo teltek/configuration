@@ -76,21 +76,13 @@ export interface GoogleAnalyticsConfig {
 export class SystemConfigService {
 	constructor(private injector: Injector) {}
 
-        private getBaseUrl() {
-                if (window.location.protocol === "https") {
-		        return "{{ BADGR_SERVER_SSL_URL }}";
-		} else {
-		        return "{{ BADGR_SERVER_NO_SSL_URL }}";
-	        }
-        }
-
         private getConfig<T>(getter: (config: BadgrConfig) => T): T {
 		const configProviders: { (): BadgrConfig }[] = [
 			() => window[ 'config' ],
 			() => this.injector.get('config', {}),
 			() => ({
 				api: {
-					baseUrl: this.getBaseUrl(),
+					baseUrl: "{{ BADGR_SERVER_BASE_URL }}",
 				},
 				features: {
 					alternateLandingRedirect: false
