@@ -1,9 +1,9 @@
 [program:badgr_ui]
-command=./run-prod.sh
+command={{ badgr_ui_node_modules_bin }}/http-server -p {{ BADGR_UI_PYTHON_PORT }}
 
 priority=999
 user={{ common_web_user }}
-directory={{ badgr_ui_code_dir }}
+directory={{ badgr_ui_dist_dir }}
 environment=PORT={{ badgr_server_gunicorn_port }},ADDRESS={{ badgr_server_gunicorn_host }},LANG={{ BADGR_SERVER_LANG }},DJANGO_SETTINGS_MODULE={{ BADGR_SERVER_ENV }},SERVICE_VARIANT="badgr_ui",PATH="{{ badgr_server_deploy_path }}",HOME="/"
 stdout_logfile={{ supervisor_log_dir }}/%(program_name)s-stdout.log
 stderr_logfile={{ supervisor_log_dir }}/%(program_name)s-stderr.log

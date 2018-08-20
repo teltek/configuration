@@ -29,7 +29,7 @@
 
 # This key is only needed if you are pulling down a private
 # badgr server repo
-- name: Install read-only ssh key for the badgr_server repo
+- name: Install read-only ssh key for the badgr_ui repo
   copy:
     content: "{{ BADGR_SERVER_GIT_IDENTITY }}"
     dest: "{{ badgr_server_git_identity }}"
@@ -79,7 +79,7 @@
     state: absent
   when: BADGR_SERVER_GIT_IDENTITY != "none"
 
-- name: Install nodejs
+- name: Install nodejs for badgr ui
   apt:
     name: "nodejs"
     install_recommends: yes
@@ -87,7 +87,7 @@
     update_cache: yes
   when: ansible_distribution == 'Ubuntu'
 
-- name: Install npm
+- name: Install npm for badgr ui
   apt:
     name: "npm"
     install_recommends: yes
@@ -95,19 +95,19 @@
     update_cache: yes
   when: ansible_distribution == 'Ubuntu'
 
-- name: Fix Install npm nodejs I
+- name: Fix Install npm nodejs for badgr ui I
   shell: "npm cache clean -f"
   become_user: "root"
 
-- name: Fix Install npm nodejs II
+- name: Fix Install npm nodejs for badgr ui II
   shell: "npm install -g n"
   become_user: "root"
 
-- name: Fix Install npm nodejs III
+- name: Fix Install npm nodejs for badgr ui III
   shell: "n stable"
   become_user: "root"
 
-- name: npm install dependencies
+- name: npm install dependencies for badgr ui
   shell: "npm install"
   args:
     chdir: "{{ badgr_ui_code_dir }}"
@@ -124,12 +124,26 @@
   with_items:
     - { src: 'config.service.ts.j2', dest: 'config.service.ts' }
 
+- name: Build badgr ui server
+  shell: "npm run build:prod"
+  args:
+    chdir: "{{ badgr_ui_code_dir }}"
+  environment: "{{ badgr_server_environment }}"
+  become_user: "{{ badgr_server_user }}"
+
+- name: Copy config.js to dist in badgr ui
+  shell: "cp src/config.js dist"
+  args:
+    chdir: "{{ badgr_ui_code_dir }}"
+  environment: "{{ badgr_server_environment }}"
+  become_user: "{{ badgr_server_user }}"
+
   # call supervisorctl update. this reloads
   # the supervisorctl config and restarts
   # the services if any of the configurations
   # have changed.
   #
-- name: Update supervisor configuration
+- name: Update supervisor configuration for badgr ui
   shell:  "{{ supervisor_ctl }} -c {{ supervisor_cfg }} update"
   register: supervisor_update
   become_user: "{{ supervisor_service_user }}"
@@ -152,4 +166,3 @@
     config: "{{ supervisor_cfg }}"
     state: restarted
   when: not disable_edx_services
-
