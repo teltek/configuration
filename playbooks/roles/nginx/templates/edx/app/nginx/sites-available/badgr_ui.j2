@@ -22,6 +22,8 @@ error_page {{ k }} {{ v }};
   add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
   {% endif %}
 
+  root {{ badgr_ui_dist_dir }};
+
   # Prevent invalid display courseware in IE 10+ with high privacy settings
   add_header P3P '{{ NGINX_P3P_MESSAGE }}';
 
@@ -56,28 +58,8 @@ error_page {{ k }} {{ v }};
   # via hiera.
   client_max_body_size 4M;
 
-  location @proxy_to_badgr_ui_app {
-    {% if NGINX_SET_X_FORWARDED_HEADERS %}
-    proxy_set_header X-Forwarded-Proto $scheme;
-    proxy_set_header X-Forwarded-Port $server_port;
-    proxy_set_header X-Forwarded-For $remote_addr;
-    {% else %}
-    proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
-    proxy_set_header X-Forwarded-Port $http_x_forwarded_port;
-    proxy_set_header X-Forwarded-For $http_x_forwarded_for;
-    {% endif %}
-
-    # newrelic-specific header records the time when nginx handles a request.
-    proxy_set_header X-Queue-Start "t=${msec}";
-
-    proxy_set_header Host $http_host;
-
-    proxy_redirect off;
-    proxy_pass http://badgr-ui-backend;
-  }
-
-  location ~ ^/ {
-    try_files $uri @proxy_to_badgr_ui_app;
+  location / {
+      try_files $uri /index.html;
   }
 
   {% include "robots.j2" %}
