@@ -152,3 +152,5 @@ badgr_ui_node_modules_bin: "{{ badgr_ui_code_dir }}/node_modules/.bin"
 badgr_server_deploy_path: "{{ badgr_server_venv_bin }}:{{ badgr_server_code_dir }}/bin:{{ badgr_ui_node_modules_bin }}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 badgr_ui_dist_dir: "{{ badgr_ui_code_dir }}/dist"
+
+BADGR_SERVER_SECRET_KEY: 'ThisIsASecretKeyChangeMe'
