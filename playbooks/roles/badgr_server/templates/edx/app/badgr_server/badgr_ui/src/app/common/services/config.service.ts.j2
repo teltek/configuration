@@ -76,7 +76,7 @@ export interface GoogleAnalyticsConfig {
 export class SystemConfigService {
 	constructor(private injector: Injector) {}
 
-        private getConfig<T>(getter: (config: BadgrConfig) => T): T {
+	private getConfig<T>(getter: (config: BadgrConfig) => T): T {
 		const configProviders: { (): BadgrConfig }[] = [
 			() => window[ 'config' ],
 			() => this.injector.get('config', {}),
