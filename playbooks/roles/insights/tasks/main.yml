@@ -74,7 +74,7 @@
   environment: "{{ insights_environment }}"
 
 - name: Fix bower registry url
-  shell: "grep -rl 'bower.herokuapp.com' {{ insights_code_dir }} | xargs sed -i 's/bower.herokuapp.com/registry.bower.io'"
+  shell: "grep -rl 'bower.herokuapp.com' {{ insights_code_dir }} | xargs sed -i 's/bower.herokuapp.com/registry.bower.io/g'"
   become_user: "{{ insights_user }}"
   tags:
     - install
