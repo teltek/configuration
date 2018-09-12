@@ -73,6 +73,14 @@
     - install:app-requirements
   environment: "{{ insights_environment }}"
 
+- name: Fix bower registry url
+  shell: "grep -rl \"bower\.herokuapp\.com\" {{ insights_code_dir }} | xargs sed -i \"s/bower\.herokuapp\.com/registry\.bower\.io\""
+  become_user: "{{ insights_user }}"
+  tags:
+    - install
+    - install:app-requirements
+  environment: "{{ insights_environment }}"
+
 - name: install bower dependencies
   shell: ". {{ insights_venv_dir }}/bin/activate && . {{ insights_nodeenv_bin }}/activate && {{ insights_node_bin }}/bower install --production --config.interactive=false"
   args:
