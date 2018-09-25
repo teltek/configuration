@@ -83,8 +83,8 @@ git pull
 ##
 ## Install the ansible requirements
 ##
-# cd /var/tmp/configuration
-# sudo -H pip install -r requirements.txt
+cd /var/tmp/configuration
+sudo -H pip install -r requirements.txt
 
 ##
 ## Run the edx_sandbox.yml playbook in the configuration/playbooks directory
