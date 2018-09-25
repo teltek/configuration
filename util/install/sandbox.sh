@@ -19,19 +19,19 @@ fi
 ##
 ## Set ppa repository source for gcc/g++ 4.8 in order to install insights properly
 ##
-sudo apt-get install -y python-software-properties
-sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+# sudo apt-get install -y python-software-properties
+# sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
 
 ##
 ## Update and Upgrade apt packages
 ##
-sudo apt-get update -y
-sudo apt-get upgrade -y
+# sudo apt-get update -y
+# sudo apt-get upgrade -y
 
 ##
 ## Install system pre-requisites
 ##
-sudo apt-get install -y build-essential software-properties-common curl git-core libxml2-dev libxslt1-dev python-pip libmysqlclient-dev python-apt python-dev libxmlsec1-dev libfreetype6-dev swig gcc g++
+# sudo apt-get install -y build-essential software-properties-common curl git-core libxml2-dev libxslt1-dev python-pip libmysqlclient-dev python-apt python-dev libxmlsec1-dev libfreetype6-dev swig gcc g++
 sudo pip install --upgrade pip==8.1.2
 sudo pip install --upgrade setuptools==24.0.3
 sudo -H pip install --upgrade virtualenv==15.0.2
@@ -75,18 +75,19 @@ CONFIGURATION_VERSION=${CONFIGURATION_VERSION-${OPENEDX_RELEASE-master}}
 ## Clone the configuration repository and run Ansible
 ##
 cd /var/tmp
-git clone https://github.com/edx/configuration
+git clone https://github.com/teltek/configuration
 cd configuration
-git checkout $CONFIGURATION_VERSION
+git checkout open-release/ginkgo.1.migrate
 git pull
 
 ##
 ## Install the ansible requirements
 ##
-cd /var/tmp/configuration
-sudo -H pip install -r requirements.txt
+# cd /var/tmp/configuration
+# sudo -H pip install -r requirements.txt
 
 ##
 ## Run the edx_sandbox.yml playbook in the configuration/playbooks directory
 ##
-cd /var/tmp/configuration/playbooks && sudo -E ansible-playbook -c local ./edx_sandbox.yml -i "localhost," $EXTRA_VARS "$@"
+# cd /var/tmp/configuration/playbooks && sudo -E ansible-playbook -c local ./edx_sandbox.yml -i "localhost," $EXTRA_VARS "$@"
+sudo -E ansible-playbook -c local ./edx_sandbox.yml -i "localhost," $EXTRA_VARS "$@"
