@@ -96,6 +96,16 @@
   with_items:
     - { src: 'config.service.ts.j2', dest: 'config.service.ts' }
 
+- name: Create badgr ui application theme setup local file
+  template:
+    src: "{{ badgr_ui_template_theming_dir }}/{{ item.src }}"
+    dest: "{{ badgr_ui_theming_dir }}/{{ item.dest }}"
+    owner: "{{ badgr_server_user }}"
+    group: "{{ common_web_user }}"
+    mode: "0640"
+  with_items:
+    - { src: 'theme-setup.ts.j2', dest: 'theme-setup.ts' }
+
 - name: Build badgr ui server
   shell: "npm run build:prod"
   args:

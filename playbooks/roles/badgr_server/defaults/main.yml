@@ -145,8 +145,12 @@ badgr_ui_gunicorn_port: 4000
 badgr_ui_gunicorn_host: 127.0.0.1
 
 badgr_ui_settings_subdir: "src/app/common/services"
-badgr_ui_template_settings_dir: "{{ badgr_server_role_templates_dir }}/{{ badgr_ui_code_dir }}/{{ badgr_ui_settings_subdir }}"
+badgr_ui_template_settings_dir: "{{ badgr_server_role_templates_dir }}{{ badgr_ui_code_dir }}/{{ badgr_ui_settings_subdir }}"
 badgr_ui_settings_dir: "{{ badgr_ui_code_dir }}/{{ badgr_ui_settings_subdir }}"
+
+badgr_ui_theming_subdir: "src/theming"
+badgr_ui_template_theming_dir : "{{ badgr_server_role_templates_dir }}{{ badgr_ui_code_dir }}/{{ badgr_ui_theming_subdir }}"
+badgr_ui_theming_dir: "{{ badgr_ui_code_dir }}/{{ badgr_ui_theming_subdir }}"
 
 badgr_ui_node_modules_bin: "{{ badgr_ui_code_dir }}/node_modules/.bin"
 
@@ -155,3 +159,6 @@ badgr_server_deploy_path: "{{ badgr_server_venv_bin }}:{{ badgr_server_code_dir 
 badgr_ui_dist_dir: "{{ badgr_ui_code_dir }}/dist"
 
 BADGR_SERVER_SECRET_KEY: 'ThisIsASecretKeyChangeMe'
+
+BADGR_UI_TOS_LINK: "https://badgr.org/missing-terms"
+BADGR_UI_PRIVACY_LINK: "https://badgr.org/missing-terms"
