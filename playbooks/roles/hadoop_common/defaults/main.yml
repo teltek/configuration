@@ -22,8 +22,9 @@ HADOOP_COMMON_CONF_DIR: "{{ HADOOP_COMMON_HOME }}/etc/hadoop"
 
 HADOOP_COMMON_PROTOBUF_VERSION: 2.5.0
 HADOOP_COMMON_SERVICES_DIR: "{{ HADOOP_COMMON_USER_HOME }}/services.d"
-HADOOP_COMMON_SERVICE_HEAP_MAX: 256
-HADOOP_COMMON_TOOL_HEAP_MAX: 128
+# m4.2xlarge
+HADOOP_COMMON_SERVICE_HEAP_MAX: 2744
+HADOOP_COMMON_TOOL_HEAP_MAX: 3481
 
 hadoop_common_role_name: hadoop_common
 hadoop_common_user: hadoop
@@ -100,12 +101,26 @@ HDFS_SITE_DEFAULT_CONFIG:
 #   mapreduce.reduce.memory.mb: 1024
 #   mapreduce.reduce.java.opts: '-Xmx768M'
 
+# m4.2xlarge
+mapred_site_config:
+  mapreduce.map.memory.mb: 1536
+  mapreduce.map.java.opts: '-Xmx1229m'
+  mapreduce.reduce.memory.mb: 3072
+  mapreduce.reduce.java.opts: '-Xmx2458m'
+
 # yarn_site_config:
 #   yarn.app.mapreduce.am.resource.mb: 1024
 #   yarn.scheduler.minimum-allocation-mb: 32
 #   yarn.scheduler.maximum-allocation-mb: 2048
 #   yarn.nodemanager.resource.memory-mb: 2048
 #   yarn.nodemanager.vmem-pmem-ratio: 2.1
+
+# m4.2xlarge
+yarn_site_config:
+  yarn.app.mapreduce.am.resource.mb: 3072
+  yarn.scheduler.minimum-allocation-mb: 32
+  yarn.scheduler.maximum-allocation-mb: 24576
+  yarn.nodemanager.resource.memory-mb: 24576
 
 #
 # Variables override the stock configuration for entry into
