@@ -128,8 +128,6 @@ yarn_site_config:
 #     mapred-site.xml
 #     yarn-site.xml
 #
-mapred_site_config: {}
-yarn_site_config: {}
 HADOOP_CORE_SITE_EXTRA_CONFIG: {}
 HDFS_SITE_EXTRA_CONFIG: {}
 
