@@ -102,7 +102,7 @@ CONFIGURATION_VERSION=${CONFIGURATION_VERSION-$OPENEDX_RELEASE}
 cd /var/tmp
 git clone https://github.com/teltek/configuration
 cd configuration
-git checkout $CONFIGURATION_VERSION
+git checkout open-release/hawthorn.master-disable-ecommerce
 git pull
 
 ##
