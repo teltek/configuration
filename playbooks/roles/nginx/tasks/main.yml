@@ -352,6 +352,17 @@
     - install
     - install:configuration
 
+- name: Create nginx.htpasswd file
+  template:
+    src: "edx/app/nginx/nginx.htpasswd.j2"
+    dest: "/edx/app/nginx/nginx.htpasswd"
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - install
+    - install:configuration
+
 # nginx is started during package installation, before any of the configuration files are in place.
 # The handler that reloads the configuration would be run only at the very end of the playbook, so
 # none of the local services would be available in the meantime, e.g. causing certs to error out
