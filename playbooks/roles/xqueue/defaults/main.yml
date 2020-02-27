@@ -120,7 +120,7 @@ XQUEUE_CONFIG:
   SESSION_COOKIE_SECURE: "{{ XQUEUE_SESSION_COOKIE_SECURE }}"
   CSRF_COOKIE_SECURE: "{{ XQUEUE_CSRF_COOKIE_SECURE }}"
 
-xqueue_version: "master"
+xqueue_version: "open-release/hawthorn.master"
 XQUEUE_GIT_IDENTITY: !!null
 
 XQUEUE_REPOS:
